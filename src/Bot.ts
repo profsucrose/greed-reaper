@@ -9,7 +9,7 @@ import Counts from './Counts'
 
 // hour of day when game concludes
 const TIMER_END_HOUR = 0 // 12:00 AM
-const CHANNEL_ID = 'G01G6KZFXHN'
+const CHANNEL_ID = 'C018F56QC9G'
 
 class Bot {
     // state
@@ -118,9 +118,7 @@ ${
         }
         
         if (!/^[0-9]+$/.test(text)) {
-            await respond({
-                text: 'Your entry must be a valid number!'
-            })
+            await respond({ text: 'Your entry must be a valid number!' })
             return;
         }
 
@@ -135,10 +133,13 @@ ${
             return
         }
 
-        console.log(this.counts)
         this.counts.set(user_id, num)
-        console.log(this.counts)
         await respond({ text: `Registered ${num} as your number! (Game ends at ${this.formatHour(TIMER_END_HOUR)}!)` })
+        if (this.counts.size() === 1) {
+            await this.sendMessage(CHANNEL_ID, `<@${user_id}> has made the first entry for today! There will be a winner today if someone else makes an entry!`)
+        } else {
+            await this.sendMessage(CHANNEL_ID, `<@${user_id}> has made their entry!`)
+        }
     }
 
     private sendMessage(channel: string, text: string) {
