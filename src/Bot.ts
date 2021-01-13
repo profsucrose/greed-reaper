@@ -123,7 +123,7 @@ ${
         }
 
         const num = parseInt(text, 10);
-        if (num < 0 || num > 20) {
+        if (num < 0 || num > 50) {
             await respond({ text: 'Your number must be between 0 and 20' })
             return
         }
