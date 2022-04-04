@@ -1,47 +1,35 @@
-import fs from 'fs'
+import { Client } from '@replit/database'
 
-// hacky JSON database for storing user-number entry key-value pairs
+// Repl.it DB adapter class
 class Counts {
-    private counts: Record<string, number>
-    private path: string
-
-    constructor(path: string) {
-        this.path = path
-        try {
-            this.counts = JSON.parse(fs.readFileSync(path).toString())
-        } catch (err) {
-            throw new Error(`Error when initializing count DB: ${err}`)
-        }
-    }
+    private client = new Client()
 
     clear() {
-        this.counts = {}
-        fs.writeFileSync(this.path, '{}')
+        this.client.empty()
     }
 
     size(): number {
-        return Object.keys(this.counts).length
+        return Object.keys(this.client.getAll()).length
     }
 
-    has(uid: string): boolean {
-        return this.counts[uid] !== undefined
+    async has(uid: string): Promise<boolean> {
+        return this.client.get(uid) != undefined
     }
 
-    get(uid: string): number {
-        return this.counts[uid]
+    async get(uid: string): Promise<number> {
+        return Number(await this.client.get(uid))
     }
 
     set(uid: string, num: number) {
-        this.counts[uid] = num
-        fs.writeFileSync(this.path, JSON.stringify(this.counts))
+        this.client.set(uid, num)
     }
 
     getEntries(): [string, number][] {
-        return Object.entries(this.counts)
+        return Object.entries(this.client.getAll())
     }
 
     getCountOfUsersWithNum(num: number) {
-        return Object.values(this.counts)
+        return Object.values(this.client.getAll())
             .reduce((acc, el) => 
                 acc + (el === num ? 1 : 0), 
                 0

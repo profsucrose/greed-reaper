@@ -26,7 +26,7 @@ class Bot {
         this.app.command('/greed', async ({ command, ack, respond }) => 
             this.onCommand(command, ack, respond)
         )
-        this.counts = new Counts(path)
+        this.counts = new Counts()
         this.counts.clear()
     }
 
@@ -66,11 +66,9 @@ class Bot {
             return
 
         if (this.counts.size() === 1) {
-            this.sendMessage(CHANNEL_ID, `Only <@${this.counts.getEntries[0][0]}> entered a number for today!`)
+            this.sendMessage(CHANNEL_ID, `Only <@${this.counts.getEntries[0][0]}> entered a number for today...`)
             return
         }
-
-        if (this)
 
         this.sendMessage(
             CHANNEL_ID,
@@ -110,8 +108,8 @@ ${
         const { user_id, text } = command
         if (text === '') {
             await respond({ 
-                text: this.counts.has(user_id)
-                    ? `You currently have ${this.counts.get(user_id)} registered for today (Game ends at ${this.formatHour(TIMER_END_HOUR)}!)`
+                text: await this.counts.has(user_id)
+                    ? `You currently have ${await this.counts.get(user_id)} registered for today (Game ends at ${this.formatHour(TIMER_END_HOUR)}!)`
                     : `You do not have a number registered for today (Game ends at ${this.formatHour(TIMER_END_HOUR)}!)`
             })
             return
@@ -128,8 +126,8 @@ ${
             return
         }
 
-        if (this.counts.has(user_id)) {
-            await respond({ text: `You already have ${this.counts.get(user_id)} registered for today! (Game ends at ${this.formatHour(TIMER_END_HOUR)}!)` })
+        if (await this.counts.has(user_id)) {
+            await respond({ text: `You already have ${await this.counts.get(user_id)} registered for today! (Game ends at ${this.formatHour(TIMER_END_HOUR)}!)` })
             return
         }
 
